@@ -1,0 +1,15 @@
+/* Bundled variable fonts. No local() or external font service. */
+@font-face {
+  font-family: "ASIQO Inter";
+  src: url("../assets/fonts/InterVariable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: block;
+}
+@font-face {
+  font-family: "ASIQO Mono";
+  src: url("../assets/fonts/ASIQOMono.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: block;
+}

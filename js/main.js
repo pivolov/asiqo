@@ -29,10 +29,12 @@
   }
   new ResizeObserver(()=>positionHeader()).observe(header);
 
-  function openMenu(){
+  function openMenu(event){
     if(menu.open||closing)return;
     opener=toggle;
     menu.classList.remove('is-closing');
+    // A dialog auto-focuses its first link; pointer opening must not mimic keyboard focus.
+    menu.classList.toggle('is-pointer-open',event.detail>0);
     menu.showModal();
     document.body.classList.add('dialog-open');
     toggle.setAttribute('aria-expanded','true');
@@ -54,6 +56,7 @@
     menu.classList.remove('is-closing');
     closing=false;
   }
+  menu.addEventListener('keydown',()=>menu.classList.remove('is-pointer-open'));
   toggle.addEventListener('click',openMenu);
   menu.querySelector('[data-close]').addEventListener('click',closeMenu);
   menu.addEventListener('cancel',event=>{event.preventDefault();closeMenu()});
@@ -165,7 +168,7 @@
       sum.textContent=result.valid?format.format(result.cost):'—';
       kwh.textContent=result.valid?format.format(result.consumption):'—';
       output.classList.toggle('is-long',result.valid&&result.cost>=1_000_000);
-      capacityWarning.hidden=!(result.valid&&result.power*result.units>1200);
+      capacityWarning.hidden=!(result.valid&&result.power*result.units>2000);
       return result;
     }
     for(const input of [kw,qty]){

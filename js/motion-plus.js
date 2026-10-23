@@ -170,42 +170,9 @@
   }
 
   // Keep the existing number entrances, using the same clock and cleanup path.
-  function numbers() {
-    const running = new Set();
-    const io = new IntersectionObserver(entries => {
-      for (const entry of entries) {
-        if (!entry.isIntersecting) continue;
-        io.unobserve(entry.target);
-        if (reduce.matches) continue;
-        const el = entry.target, nodes = [], slots = [];
-        const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
-        let node;
-        while ((node = walker.nextNode())) if (/\d/.test(node.nodeValue)) nodes.push([node, node.nodeValue]);
-        for (const [, text] of nodes) for (const char of text) if (/\d/.test(char)) slots.push(380 + slots.length * 120 + Math.random() * 160);
-        if (!slots.length) continue;
-        const start = performance.now(), end = Math.max(...slots) + 40;
-        const state = { nodes, frame: null };
-        function finish() { for (const [n, text] of nodes) n.nodeValue = text; running.delete(state); }
-        state.frame = now => {
-          const t = now - start; let k = 0;
-          if (t >= end) { finish(); return false; }
-          for (const [n, text] of nodes) n.nodeValue = [...text].map(c => /\d/.test(c) ? (t >= slots[k++] ? c : Math.floor(Math.random() * 10)) : c).join('');
-          return true;
-        };
-        running.add(state); run(state.frame);
-      }
-    }, { threshold: .7 });
-    document.querySelectorAll('.overview-facts .number-display,.price-number,.plant-power').forEach(el => {
-      if (el.getBoundingClientRect().top >= innerHeight * .9) io.observe(el);
-    });
-    cleanups.add(() => {
-      for (const state of running) { jobs.delete(state.frame); for (const [node, text] of state.nodes) node.nodeValue = text; }
-      running.clear();
-    });
-  }
   headerLogo();
   // Measure / reveal text only after the bundled faces have settled. Otherwise
   // a slow first font load could interrupt an already running decode animation.
   const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
-  fontsReady.then(() => { if (!reduce.matches) { headings(); numbers(); } });
+  fontsReady.then(() => { if (!reduce.matches) { headings(); } });
 })();
